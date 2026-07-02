@@ -5,6 +5,7 @@
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html>
     <head>
@@ -21,12 +22,15 @@
                             <h3>Login</h3>
                             <img src="img/logo.png" alt="70" width="170"/>
                         </div>
+                        <c:if test="${not empty error}">
+                            <div class="alert alert-danger" role="alert">${error}</div>
+                        </c:if>
                         <div class="form-group">
                             <label>Usuario:</label>
                             <input type="text" name="txtuser" class="form-control">
                         </div>
                         <div class="form-group">
-                            <label>Usuario:</label>
+                            <label>Password:</label>
                             <input type="password" name="txtpass" class="form-control">
                         </div>
                         <input type="submit" name="accion" value="Ingresar" class="btn btn-primary btn-dark">

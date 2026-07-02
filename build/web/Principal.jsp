@@ -5,6 +5,7 @@
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html>
     <head>
@@ -16,22 +17,25 @@
         <nav class="navbar navbar-expand-lg navbar-light bg-dark">
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav mr-auto">
-                    <li class="nav-item">
-                        <a style="margin-left: 10px; border: none" class="btn btn-outline-light" href="Controlador?menu=Empleado&accion=Listar" target="myFrame">Empleado</a>
-                    </li>
+                    <c:if test="${sessionScope.usuario.rol eq 'Administrador'}">
+                        <li class="nav-item">
+                            <a style="margin-left: 10px; border: none" class="btn btn-outline-light" href="Controlador?menu=Empleado&accion=Listar" target="myFrame">Empleado</a>
+                        </li>
+                    </c:if>
                     <li class="nav-item">
                         <a style="margin-left: 10px; border: none" class="btn btn-outline-light" href="Controlador?menu=NuevaVenta&accion=default" target="myFrame">Nueva venta</a>
                     </li>
                 </ul>
                 <div class="dropdown">
                     <button style="border: none" class="btn btn-outline-light dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        ${usuario.getNom()}
+                        ${sessionScope.usuario.getNom()}
                     </button>
                     <div class="dropdown-menu text-center">
                         <a class="dropdown-item" href="#">
                             <img src="img/user.png" alt="60" width="60"/>
                         </a>
-                        <a class="dropdown-item" href="#">${usuario.getUser()}</a>                  
+                        <a class="dropdown-item" href="#">${sessionScope.usuario.getUser()}</a>
+                        <a class="dropdown-item" href="#">Rol: ${sessionScope.usuario.rol}</a>
                         <div class="dropdown-divider"></div>
                         <form action="Validar" method="POST">
                             <button name="accion" value="Salir" class="dropdown-item">Salir</button>
@@ -41,6 +45,9 @@
             </div>
         </nav>
         <div class="m-4" style="height: 550px;">
+            <c:if test="${not empty error}">
+                <div class="alert alert-danger" role="alert">${error}</div>
+            </c:if>
             <iframe name="myFrame" style="height: 100%; width: 100%; border: none"></iframe>
         </div>
         <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
