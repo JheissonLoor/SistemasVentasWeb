@@ -1,137 +1,111 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package Modelo;
 
 import config.Conexion;
+import config.DatabaseException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ProductoDAO {
 
-    Conexion cn = new Conexion();
-    Connection con;
-    PreparedStatement ps;
-    ResultSet rs;
-    int r;
-    
-    public Producto buscar(int id){
-        Producto p=new Producto();
-        String sql="select * from producto where idproducto="+id;
-        try {
-            con=cn.Conexion();
-            ps=con.prepareStatement(sql);
-            rs=ps.executeQuery();
-            while (rs.next()){
-                p.setId(rs.getInt(1));
-                p.setNom(rs.getString(2));
-                p.setPre(rs.getDouble(3));
-                p.setStock(rs.getInt(4));
-                p.setEstado(rs.getString(5));                
+    public Producto buscar(int id) {
+        return listarId(id);
+    }
+
+    public Producto listarId(int id) {
+        String sql = "select IdProducto, Nombres, Precio, Stock, Estado from producto where IdProducto=? and Estado='Activo'";
+        try (Connection con = Conexion.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return map(rs);
+                }
             }
-        } catch (Exception e) {
+            return new Producto();
+        } catch (SQLException e) {
+            throw new DatabaseException("No se pudo buscar producto.", e);
         }
-        return p;
     }
 
-    public int actualizarstock(int id, int stock){
-        String sql="update producto set Stock=? where idproducto=?";
-        try {
-            con=cn.Conexion();
-            ps=con.prepareStatement(sql);
-            ps.setInt(1, stock );
-            ps.setInt(2, id);
-            ps.executeUpdate();
-        } catch (Exception e) {
-        }
-        return r;
-    }
-
-    public List listar() {
-        String sql = "select * from producto";
-        List<Producto> lista = new ArrayList();
-        try {
-            con = cn.Conexion();
-            ps = con.prepareStatement(sql);
-            rs = ps.executeQuery();
+    public List<Producto> listar() {
+        String sql = "select IdProducto, Nombres, Precio, Stock, Estado from producto order by IdProducto";
+        List<Producto> lista = new ArrayList<>();
+        try (Connection con = Conexion.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
-                Producto em = new Producto();
-                em.setId(rs.getInt(1));
-                em.setNom(rs.getString(2));
-                em.setPre(rs.getDouble(3));
-                em.setStock(rs.getInt(4));
-                em.setEstado(rs.getString(5));
-                lista.add(em);
+                lista.add(map(rs));
             }
-        } catch (Exception e) {
+            return lista;
+        } catch (SQLException e) {
+            throw new DatabaseException("No se pudo listar productos.", e);
         }
-        return lista;
-
     }
 
-    public int agregar(Producto p) {
-        String sql = "insert into producto(Nombres, Precio, Stock, Estado)values(?,?,?,?)";
-        try {
-            con = cn.Conexion();
-            ps = con.prepareStatement(sql);
+    public void actualizarStock(Connection con, int id, int cantidadVendida) throws SQLException {
+        String sql = "update producto set Stock = Stock - ? where IdProducto=? and Stock >= ?";
+        try (PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, cantidadVendida);
+            ps.setInt(2, id);
+            ps.setInt(3, cantidadVendida);
+            int updated = ps.executeUpdate();
+            if (updated == 0) {
+                throw new SQLException("Stock insuficiente para el producto " + id);
+            }
+        }
+    }
+
+    public void agregar(Producto p) {
+        String sql = "insert into producto(Nombres, Precio, Stock, Estado) values(?,?,?,?)";
+        try (Connection con = Conexion.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, p.getNom());
             ps.setDouble(2, p.getPre());
             ps.setInt(3, p.getStock());
             ps.setString(4, p.getEstado());
             ps.executeUpdate();
-        } catch (Exception e) {
+        } catch (SQLException e) {
+            throw new DatabaseException("No se pudo agregar producto.", e);
         }
-        return r;
     }
 
-    public Producto listarId(int id) {
-        Producto pr = new Producto();
-        String sql = "select * from producto where IdProducto=" + id;
-        try {
-            con = cn.Conexion();
-            ps = con.prepareStatement(sql);
-            rs = ps.executeQuery();
-            while (rs.next()) {
-                pr.setId(rs.getInt(1));
-                pr.setNom(rs.getString(2));
-                pr.setPre(rs.getDouble(3));
-                pr.setStock(rs.getInt(4));
-                pr.setEstado(rs.getString(5));
-
-            }
-        } catch (Exception e) {
-        }
-        return pr;
-    }
-
-    public int actualizar(Producto em) {
-        String sql = "update empleado set Nombres=?, Precio=?, Stock=?, Estado=?  where IdProducto=?";
-        try {
-            con = cn.Conexion();
-            ps = con.prepareStatement(sql);
-            ps.setString(1, em.getDni());
-            ps.setString(2, em.getNom());
-            ps.setString(3, em.getTel());
-            ps.setString(4, em.getEstado());
-            ps.setString(5, em.getUser());
-            ps.setInt(6, em.getId());
+    public void actualizar(Producto p) {
+        String sql = "update producto set Nombres=?, Precio=?, Stock=?, Estado=? where IdProducto=?";
+        try (Connection con = Conexion.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, p.getNom());
+            ps.setDouble(2, p.getPre());
+            ps.setInt(3, p.getStock());
+            ps.setString(4, p.getEstado());
+            ps.setInt(5, p.getId());
             ps.executeUpdate();
-        } catch (Exception e) {
+        } catch (SQLException e) {
+            throw new DatabaseException("No se pudo actualizar producto.", e);
         }
-        return r;
     }
 
     public void delete(int id) {
-        String sql = "delete from producto where IdProducto=" + id;
-        try {
-            con = cn.Conexion();
-            ps = con.prepareStatement(sql);
+        String sql = "delete from producto where IdProducto=?";
+        try (Connection con = Conexion.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, id);
             ps.executeUpdate();
-        } catch (Exception e) {
+        } catch (SQLException e) {
+            throw new DatabaseException("No se pudo eliminar producto.", e);
         }
+    }
+
+    private Producto map(ResultSet rs) throws SQLException {
+        Producto p = new Producto();
+        p.setId(rs.getInt("IdProducto"));
+        p.setNom(rs.getString("Nombres"));
+        p.setPre(rs.getDouble("Precio"));
+        p.setStock(rs.getInt("Stock"));
+        p.setEstado(rs.getString("Estado"));
+        return p;
     }
 }

@@ -17,7 +17,14 @@
         <div class="d-flex">
             <div class="card col-sm-6">
                 <div class="card-body">
+                    <c:if test="${not empty error}">
+                        <div class="alert alert-danger" role="alert">${error}</div>
+                    </c:if>
+                    <c:if test="${not empty mensaje}">
+                        <div class="alert alert-success" role="alert">${mensaje}</div>
+                    </c:if>
                     <form action="Controlador?menu=Empleado" method="POST">
+                        <input type="hidden" name="idEmpleado" value="${empleado.getId()}">
                         <div class="form-group">
                             <label>Dni</label>
                             <input type="text" value="${empleado.getDni()}" name="txtDni" class="form-control">
@@ -38,6 +45,14 @@
                             <label>Usuario</label>
                             <input type="text" value="${empleado.getUser()}" name="txtUser" class="form-control">
                         </div>
+                        <div class="form-group">
+                            <label>Password</label>
+                            <input type="password" name="txtPassword" class="form-control" placeholder="Obligatorio al crear; opcional al actualizar">
+                        </div>
+                        <div class="form-group">
+                            <label>Rol</label>
+                            <input type="text" value="${empty empleado.getRol() ? 'Vendedor' : empleado.getRol()}" name="txtRol" class="form-control">
+                        </div>
                         <input type="submit" name="accion" value="Agregar" class="btn btn-dark">
                         <input type="submit" name="accion" value="Actualizar" class="btn btn-dark">
                     </form>
@@ -47,12 +62,13 @@
                 <table class="table table-hover">
                     <thead>
                         <tr>
-                            <<th>ID</th>
+                            <th>ID</th>
                             <th>DNI</th>
                             <th>NOMBRES</th>
                             <th>TELEFONO</th>
                             <th>ESTADO</th>
                             <th>USER</th>
+                            <th>ROL</th>
                             <th>ACCIONES</th>
                         </tr>
                     </thead>
@@ -65,6 +81,7 @@
                                 <td>${em.getTel()}</td>
                                 <td>${em.getEstado()}</td>
                                 <td>${em.getUser()}</td>
+                                <td>${em.getRol()}</td>
                                 <td>
                                     <a class="btn btn-dark" href="Controlador?menu=Empleado&accion=Editar&id=${em.getId()}">Editar</a>
                                     <a class="btn btn-danger" href="Controlador?menu=Empleado&accion=Delete&id=${em.getId()}">Eliminar</a>

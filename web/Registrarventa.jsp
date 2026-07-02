@@ -24,6 +24,12 @@
         <div class="d-flex">
             <div class="col sm-5 parte1">
                 <div class="card">
+                    <c:if test="${not empty error}">
+                        <div class="alert alert-danger m-3" role="alert">${error}</div>
+                    </c:if>
+                    <c:if test="${not empty mensaje}">
+                        <div class="alert alert-success m-3" role="alert">${mensaje}</div>
+                    </c:if>
                     <form action="Controlador?menu=NuevaVenta" method="POST">
                         <div class="card-body">
                             <div class="form-group">
@@ -31,7 +37,7 @@
                             </div>
                             <div class="form-group d-flex">
                                 <div class="col-sm-6 d-flex">
-                                    <input type="text" name="Codigocliente" value="${c.getDni()}" class="form-control" placeholder="Código">
+                                    <input type="text" name="Codigocliente" value="${c.getDni()}" class="form-control" placeholder="DNI">
                                     <input type="submit" name="accion" value="BuscarCliente" class="btn btn-outline-dark">
                                 </div>
                                 <div class="col-sm-6">
@@ -63,6 +69,7 @@
                             </div>
                             <div class="form-group">
                                 <div class="col-sm">
+                                    <input type="hidden" name="idProducto" value="${producto.getId()}">
                                     <button type="submit" name="accion" value="Agregar" class="btn btn-outline-dark">Agregar Producto</button>
                                 </div>                                
                             </div>
@@ -102,7 +109,8 @@
                     </div>
                     <div class="card-footer d-flex">
                         <div class="colum-sm-6">
-                            <a href="Controlador?menu=NuevaVenta&accion=GenerarVenta" onclick="print()" class="btn btn-dark">Generar Venta</a>
+                            <a href="Controlador?menu=NuevaVenta&accion=GenerarVenta" class="btn btn-dark">Generar Venta</a>
+                            <a href="Controlador?menu=NuevaVenta&accion=Limpiar" class="btn btn-outline-secondary">Limpiar</a>
                         </div>
                         <div class="colum-sm-4 ml-auto">
                             <input type="text" name="txtTotal" value="S/. ${totalpagar}0" class="form-control">
