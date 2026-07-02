@@ -1,0 +1,23 @@
+# Build output
+/build/
+/dist/
+*.class
+*.war
+*.ear
+
+# NetBeans local files
+/nbproject/private/
+
+# Runtime and logs
+*.log
+*.tmp
+
+# OS/editor noise
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Local environment files
+.env
+.env.*
