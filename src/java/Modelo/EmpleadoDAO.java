@@ -3,125 +3,132 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package Modelo;
+import config.DatabaseException;
 import config.Conexion;
+import config.PasswordUtil;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class EmpleadoDAO {
 
-    Conexion cn = new Conexion();
-    Connection con;
-    PreparedStatement ps;
-    ResultSet rs;
-    int r;
-
-    public Empleado Validar(String user, String dni) {
-        Empleado em = new Empleado();
-        String sql = "select * from empleado where User=? and DNI=?";
-        try {
-            con = cn.Conexion();
-            ps = con.prepareStatement(sql);
+    public Empleado Validar(String user, String password) {
+        String sql = "select IdEmpleado, Dni, Nombres, Telefono, Estado, User, PasswordHash, Rol from empleado where User=? and Estado='Activo'";
+        try (Connection con = Conexion.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, user);
-            ps.setString(2, dni);
-            rs = ps.executeQuery();
-            while (rs.next()) {
-                em.setId(rs.getInt("IdEmpleado"));
-                em.setUser(rs.getString("User"));
-                em.setDni(rs.getString("Dni"));
-                em.setNom(rs.getString("Nombres"));
-
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    Empleado em = map(rs);
+                    if (PasswordUtil.verify(password, em.getPasswordHash())) {
+                        return em;
+                    }
+                }
             }
-        } catch (Exception e) {
+            return new Empleado();
+        } catch (SQLException e) {
+            throw new DatabaseException("No se pudo validar el usuario.", e);
         }
-        return em;
-    }
-//CRUD
-
-    public List listar() {
-        String sql = "select * from empleado";
-        List<Empleado> lista = new ArrayList();
-        try {
-            con = cn.Conexion();
-            ps = con.prepareStatement(sql);
-            rs = ps.executeQuery();
-            while (rs.next()) {
-                Empleado em = new Empleado();
-                em.setId(rs.getInt(1));
-                em.setDni(rs.getString(2));
-                em.setNom(rs.getString(3));
-                em.setTel(rs.getString(4));
-                em.setEstado(rs.getString(5));
-                em.setUser(rs.getString(6));
-                lista.add(em);
-            }
-        } catch (Exception e) {
-        }
-        return lista;
-
     }
 
-    public int agregar(Empleado em) {
-        String sql = "insert into empleado(Dni, Nombres, Telefono, Estado, User)values(?,?,?,?,?)";
-        try {
-            con = cn.Conexion();
-            ps = con.prepareStatement(sql);
+    public List<Empleado> listar() {
+        String sql = "select IdEmpleado, Dni, Nombres, Telefono, Estado, User, PasswordHash, Rol from empleado order by IdEmpleado";
+        List<Empleado> lista = new ArrayList<>();
+        try (Connection con = Conexion.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                lista.add(map(rs));
+            }
+            return lista;
+        } catch (SQLException e) {
+            throw new DatabaseException("No se pudo listar empleados.", e);
+        }
+    }
+
+    public void agregar(Empleado em, String password) {
+        String sql = "insert into empleado(Dni, Nombres, Telefono, Estado, User, PasswordHash, Rol) values(?,?,?,?,?,?,?)";
+        try (Connection con = Conexion.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, em.getDni());
             ps.setString(2, em.getNom());
             ps.setString(3, em.getTel());
             ps.setString(4, em.getEstado());
             ps.setString(5, em.getUser());
+            ps.setString(6, PasswordUtil.hash(password));
+            ps.setString(7, em.getRol());
             ps.executeUpdate();
-        } catch (Exception e) {
+        } catch (SQLException e) {
+            throw new DatabaseException("No se pudo agregar empleado.", e);
         }
-        return r;
-    }
-    public Empleado listarId(int id){
-        Empleado emp=new Empleado();
-        String sql="select * from empleado where IdEmpleado="+id;
-        try {
-            con=cn.Conexion();
-            ps=con.prepareStatement(sql);
-            rs=ps.executeQuery();
-            while (rs.next()) {
-                emp.setDni(rs.getString(2));
-                emp.setNom(rs.getString(3));
-                emp.setTel(rs.getString(4));
-                emp.setEstado(rs.getString(5));
-                emp.setUser(rs.getString(6));
-                
-            }
-        } catch (Exception e) {
-        }
-        return emp;
     }
 
-    public int actualizar(Empleado em) {
-        String sql = "update empleado set Dni=?, Nombres=?, Telefono=?, Estado=?, User=? where IdEmpleado=?";
-        try {
-            con = cn.Conexion();
-            ps = con.prepareStatement(sql);
+    public Empleado listarId(int id) {
+        String sql = "select IdEmpleado, Dni, Nombres, Telefono, Estado, User, PasswordHash, Rol from empleado where IdEmpleado=?";
+        try (Connection con = Conexion.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return map(rs);
+                }
+            }
+            return new Empleado();
+        } catch (SQLException e) {
+            throw new DatabaseException("No se pudo buscar empleado.", e);
+        }
+    }
+
+    public void actualizar(Empleado em, String password) {
+        boolean updatePassword = password != null && !password.trim().isEmpty();
+        String sql = updatePassword
+                ? "update empleado set Dni=?, Nombres=?, Telefono=?, Estado=?, User=?, PasswordHash=?, Rol=? where IdEmpleado=?"
+                : "update empleado set Dni=?, Nombres=?, Telefono=?, Estado=?, User=?, Rol=? where IdEmpleado=?";
+        try (Connection con = Conexion.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, em.getDni());
             ps.setString(2, em.getNom());
             ps.setString(3, em.getTel());
             ps.setString(4, em.getEstado());
             ps.setString(5, em.getUser());
-            ps.setInt(6, em.getId());
+            if (updatePassword) {
+                ps.setString(6, PasswordUtil.hash(password));
+                ps.setString(7, em.getRol());
+                ps.setInt(8, em.getId());
+            } else {
+                ps.setString(6, em.getRol());
+                ps.setInt(7, em.getId());
+            }
             ps.executeUpdate();
-        } catch (Exception e) {
+        } catch (SQLException e) {
+            throw new DatabaseException("No se pudo actualizar empleado.", e);
         }
-        return r;
     }
 
     public void delete(int id) {
-        String sql="delete from empleado where IdEmpleado="+id;
-        try {
-            con=cn.Conexion();
-            ps=con.prepareStatement(sql);
+        String sql = "delete from empleado where IdEmpleado=?";
+        try (Connection con = Conexion.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, id);
             ps.executeUpdate();
-        } catch (Exception e) {
+        } catch (SQLException e) {
+            throw new DatabaseException("No se pudo eliminar empleado.", e);
         }
+    }
+
+    private Empleado map(ResultSet rs) throws SQLException {
+        Empleado em = new Empleado();
+        em.setId(rs.getInt("IdEmpleado"));
+        em.setDni(rs.getString("Dni"));
+        em.setNom(rs.getString("Nombres"));
+        em.setTel(rs.getString("Telefono"));
+        em.setEstado(rs.getString("Estado"));
+        em.setUser(rs.getString("User"));
+        em.setPasswordHash(rs.getString("PasswordHash"));
+        em.setRol(rs.getString("Rol"));
+        return em;
     }
 }

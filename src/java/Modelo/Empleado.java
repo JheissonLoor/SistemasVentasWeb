@@ -11,7 +11,8 @@ public class Empleado {
     String tel;
     String estado;
     String user;
-    String Dir;
+    String passwordHash;
+    String rol;
 
     public Empleado() {
     }
@@ -71,6 +72,22 @@ public class Empleado {
 
     public void setUser(String user) {
         this.user = user;
+    }
+
+    public String getPasswordHash() {
+        return passwordHash;
+    }
+
+    public void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
+    }
+
+    public String getRol() {
+        return rol;
+    }
+
+    public void setRol(String rol) {
+        this.rol = rol;
     }
     
 }

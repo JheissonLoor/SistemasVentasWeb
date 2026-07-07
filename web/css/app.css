@@ -1,0 +1,138 @@
+body {
+    background: #f4f6f8;
+    color: #1f2933;
+    font-family: "Segoe UI", Arial, sans-serif;
+}
+
+.login-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #111827 0%, #1f2937 52%, #f59e0b 52%, #f59e0b 100%);
+    padding: 24px;
+}
+
+.login-card {
+    width: 100%;
+    max-width: 420px;
+    border: 0;
+    border-radius: 8px;
+    box-shadow: 0 20px 60px rgba(15, 23, 42, 0.24);
+}
+
+.brand-logo {
+    width: 120px;
+    height: 120px;
+    display: inline-block;
+    border-radius: 8px;
+    background: #f8fafc url("../img/logo.png") center / 210px 210px no-repeat;
+}
+
+.app-shell {
+    min-height: 100vh;
+    background: #eef2f6;
+}
+
+.topbar {
+    background: #111827;
+    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.12);
+}
+
+.topbar .navbar-brand,
+.topbar .nav-link,
+.topbar .btn-link {
+    color: #fff;
+}
+
+.topbar .btn-outline-light {
+    border-color: rgba(255, 255, 255, 0.35);
+}
+
+.brand-mark {
+    width: 36px;
+    height: 36px;
+    display: inline-block;
+    background: #fff;
+    background-image: url("../img/logo.png");
+    background-position: center;
+    background-size: 68px 68px;
+    background-repeat: no-repeat;
+    border-radius: 8px;
+    flex: 0 0 auto;
+}
+
+.content-frame {
+    width: 100%;
+    min-height: calc(100vh - 112px);
+    border: 0;
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+}
+
+.page-wrap {
+    padding: 24px;
+}
+
+.section-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #111827;
+}
+
+.panel-card {
+    border: 0;
+    border-radius: 8px;
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+}
+
+.panel-card .card-header {
+    background: #fff;
+    border-bottom: 1px solid #e5e7eb;
+    font-weight: 700;
+}
+
+.table thead th {
+    border-top: 0;
+    color: #475569;
+    font-size: 0.78rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.table td {
+    vertical-align: middle;
+}
+
+.badge-soft {
+    background: #e8f5ef;
+    color: #166534;
+    border-radius: 999px;
+    padding: 6px 10px;
+    font-weight: 600;
+}
+
+.total-box {
+    min-width: 180px;
+    text-align: right;
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.form-control,
+.btn {
+    border-radius: 6px;
+}
+
+.btn-dark {
+    background: #111827;
+    border-color: #111827;
+}
+
+.btn-warning {
+    background: #f59e0b;
+    border-color: #f59e0b;
+    color: #111827;
+    font-weight: 700;
+}
