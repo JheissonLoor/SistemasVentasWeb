@@ -1,6 +1,7 @@
 # Build output
 /build/
 /dist/
+/target/
 *.class
 *.war
 *.ear
