@@ -1,6 +1,5 @@
 <%-- 
-    Document   : Empleado
-    Created on : 19 may. 2024, 21:20:09
+    Document   : Cliente
     Author     : Jheisson Loor
 --%>
 
@@ -13,16 +12,16 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
         <link rel="stylesheet" href="css/app.css">
-        <title>Empleados</title>
+        <title>Clientes</title>
     </head>
     <body>
         <div class="page-wrap">
             <div class="page-heading">
                 <div>
-                    <div class="section-title">Gestion de empleados</div>
-                    <div class="text-muted">Usuarios internos, permisos y estado de acceso</div>
+                    <div class="section-title">Clientes</div>
+                    <div class="text-muted">Base de clientes para emision de ventas</div>
                 </div>
-                <a class="btn btn-outline-dark" href="Controlador?menu=Empleado&accion=Listar">Nuevo</a>
+                <a class="btn btn-outline-dark" href="Controlador?menu=Cliente&accion=Listar">Nuevo</a>
             </div>
             <c:if test="${not empty error}">
                 <div class="alert alert-danger" role="alert"><c:out value="${error}"/></div>
@@ -33,43 +32,28 @@
             <div class="row">
                 <div class="col-lg-4 mb-4">
                     <div class="card panel-card">
-                        <div class="card-header">Empleado</div>
+                        <div class="card-header">Cliente</div>
                         <div class="card-body">
-                            <form action="Controlador?menu=Empleado" method="POST">
+                            <form action="Controlador?menu=Cliente" method="POST">
                                 <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
-                                <input type="hidden" name="idEmpleado" value="${empleado.getId()}">
+                                <input type="hidden" name="idCliente" value="${cliente.getId()}">
                                 <div class="form-group">
                                     <label>DNI</label>
-                                    <input type="text" value="${empleado.getDni()}" name="txtDni" class="form-control" maxlength="20" required>
+                                    <input type="text" value="${cliente.getDni()}" name="txtDni" class="form-control" maxlength="20" required>
                                 </div>
                                 <div class="form-group">
                                     <label>Nombres</label>
-                                    <input type="text" value="${empleado.getNom()}" name="txtNombres" class="form-control" maxlength="120" required>
+                                    <input type="text" value="${cliente.getNom()}" name="txtNombres" class="form-control" maxlength="120" required>
                                 </div>
                                 <div class="form-group">
-                                    <label>Telefono</label>
-                                    <input type="text" value="${empleado.getTel()}" name="txtTel" class="form-control" maxlength="30">
+                                    <label>Direccion</label>
+                                    <input type="text" value="${cliente.getDir()}" name="txtDireccion" class="form-control" maxlength="180">
                                 </div>
                                 <div class="form-group">
                                     <label>Estado</label>
                                     <select name="txtEstado" class="form-control">
-                                        <option value="Activo" ${empleado.getEstado() eq 'Activo' ? 'selected' : ''}>Activo</option>
-                                        <option value="Inactivo" ${empleado.getEstado() eq 'Inactivo' ? 'selected' : ''}>Inactivo</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label>Usuario</label>
-                                    <input type="text" value="${empleado.getUser()}" name="txtUser" class="form-control" maxlength="50" required>
-                                </div>
-                                <div class="form-group">
-                                    <label>Password</label>
-                                    <input type="password" name="txtPassword" class="form-control" placeholder="Obligatorio al crear; opcional al editar">
-                                </div>
-                                <div class="form-group">
-                                    <label>Rol</label>
-                                    <select name="txtRol" class="form-control">
-                                        <option value="Vendedor" ${empleado.getRol() eq 'Vendedor' ? 'selected' : ''}>Vendedor</option>
-                                        <option value="Administrador" ${empleado.getRol() eq 'Administrador' ? 'selected' : ''}>Administrador</option>
+                                        <option value="Activo" ${cliente.getEstado() eq 'Activo' ? 'selected' : ''}>Activo</option>
+                                        <option value="Inactivo" ${cliente.getEstado() eq 'Inactivo' ? 'selected' : ''}>Inactivo</option>
                                     </select>
                                 </div>
                                 <div class="d-flex">
@@ -90,29 +74,25 @@
                                         <th>ID</th>
                                         <th>DNI</th>
                                         <th>Nombres</th>
-                                        <th>Telefono</th>
+                                        <th>Direccion</th>
                                         <th>Estado</th>
-                                        <th>Usuario</th>
-                                        <th>Rol</th>
                                         <th>Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <c:forEach var="em" items="${empleados}">
+                                    <c:forEach var="cl" items="${clientes}">
                                         <tr>
-                                            <td><c:out value="${em.getId()}"/></td>
-                                            <td><c:out value="${em.getDni()}"/></td>
-                                            <td><c:out value="${em.getNom()}"/></td>
-                                            <td><c:out value="${em.getTel()}"/></td>
-                                            <td><span class="badge-soft"><c:out value="${em.getEstado()}"/></span></td>
-                                            <td><c:out value="${em.getUser()}"/></td>
-                                            <td><c:out value="${em.getRol()}"/></td>
+                                            <td><c:out value="${cl.getId()}"/></td>
+                                            <td><c:out value="${cl.getDni()}"/></td>
+                                            <td><c:out value="${cl.getNom()}"/></td>
+                                            <td><c:out value="${cl.getDir()}"/></td>
+                                            <td><span class="badge-soft"><c:out value="${cl.getEstado()}"/></span></td>
                                             <td class="table-actions">
-                                                <a class="btn btn-sm btn-outline-dark" href="Controlador?menu=Empleado&accion=Editar&id=${em.getId()}">Editar</a>
-                                                <form action="Controlador?menu=Empleado" method="POST" onsubmit="return confirm('Desactivar este empleado?');">
+                                                <a class="btn btn-sm btn-outline-dark" href="Controlador?menu=Cliente&accion=Editar&id=${cl.getId()}">Editar</a>
+                                                <form action="Controlador?menu=Cliente" method="POST" onsubmit="return confirm('Desactivar este cliente?');">
                                                     <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
                                                     <input type="hidden" name="accion" value="Delete">
-                                                    <input type="hidden" name="id" value="${em.getId()}">
+                                                    <input type="hidden" name="id" value="${cl.getId()}">
                                                     <button type="submit" class="btn btn-sm btn-outline-danger">Desactivar</button>
                                                 </form>
                                             </td>

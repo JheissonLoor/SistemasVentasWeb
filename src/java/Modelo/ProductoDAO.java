@@ -12,10 +12,10 @@ import java.util.List;
 public class ProductoDAO {
 
     public Producto buscar(int id) {
-        return listarId(id);
+        return buscarActivo(id);
     }
 
-    public Producto listarId(int id) {
+    public Producto buscarActivo(int id) {
         String sql = "select IdProducto, Nombres, Precio, Stock, Estado from producto where IdProducto=? and Estado='Activo'";
         try (Connection con = Conexion.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -31,8 +31,24 @@ public class ProductoDAO {
         }
     }
 
+    public Producto listarId(int id) {
+        String sql = "select IdProducto, Nombres, Precio, Stock, Estado from producto where IdProducto=?";
+        try (Connection con = Conexion.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return map(rs);
+                }
+            }
+            return new Producto();
+        } catch (SQLException e) {
+            throw new DatabaseException("No se pudo buscar producto.", e);
+        }
+    }
+
     public List<Producto> listar() {
-        String sql = "select IdProducto, Nombres, Precio, Stock, Estado from producto order by IdProducto";
+        String sql = "select IdProducto, Nombres, Precio, Stock, Estado from producto order by IdProducto desc";
         List<Producto> lista = new ArrayList<>();
         try (Connection con = Conexion.getConnection();
              PreparedStatement ps = con.prepareStatement(sql);
@@ -89,13 +105,13 @@ public class ProductoDAO {
     }
 
     public void delete(int id) {
-        String sql = "delete from producto where IdProducto=?";
+        String sql = "update producto set Estado='Inactivo' where IdProducto=?";
         try (Connection con = Conexion.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, id);
             ps.executeUpdate();
         } catch (SQLException e) {
-            throw new DatabaseException("No se pudo eliminar producto.", e);
+            throw new DatabaseException("No se pudo desactivar producto.", e);
         }
     }
 
