@@ -6,7 +6,7 @@ package Modelo;
 
 /**
  *
- * @author antho
+ * @author Jheisson Loor
  */
 public class Venta {
 
