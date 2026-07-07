@@ -109,13 +109,13 @@ public class EmpleadoDAO {
     }
 
     public void delete(int id) {
-        String sql = "delete from empleado where IdEmpleado=?";
+        String sql = "update empleado set Estado='Inactivo' where IdEmpleado=?";
         try (Connection con = Conexion.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, id);
             ps.executeUpdate();
         } catch (SQLException e) {
-            throw new DatabaseException("No se pudo eliminar empleado.", e);
+            throw new DatabaseException("No se pudo desactivar empleado.", e);
         }
     }
 

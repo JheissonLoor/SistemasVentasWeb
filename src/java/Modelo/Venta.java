@@ -23,6 +23,8 @@ public class Venta {
     Double subtotal;
     Double monto;
     String estado;
+    String clienteNombre;
+    String empleadoNombre;
 
     public Venta() {
     }
@@ -145,6 +147,22 @@ public class Venta {
 
     public void setEstado(String estado) {
         this.estado = estado;
+    }
+
+    public String getClienteNombre() {
+        return clienteNombre;
+    }
+
+    public void setClienteNombre(String clienteNombre) {
+        this.clienteNombre = clienteNombre;
+    }
+
+    public String getEmpleadoNombre() {
+        return empleadoNombre;
+    }
+
+    public void setEmpleadoNombre(String empleadoNombre) {
+        this.empleadoNombre = empleadoNombre;
     }
 
 }

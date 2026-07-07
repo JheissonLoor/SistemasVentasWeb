@@ -24,17 +24,18 @@
     </head>
     <body>
         <div class="page-wrap">
-            <div class="d-flex align-items-center justify-content-between mb-3">
+            <div class="page-heading">
                 <div>
                     <div class="section-title">Nueva venta</div>
                     <div class="text-muted">Cliente, productos y detalle de comprobante</div>
                 </div>
+                <span class="metric-pill">Total: S/. <c:out value="${totalpagar}"/></span>
             </div>
             <c:if test="${not empty error}">
-                <div class="alert alert-danger" role="alert">${error}</div>
+                <div class="alert alert-danger" role="alert"><c:out value="${error}"/></div>
             </c:if>
             <c:if test="${not empty mensaje}">
-                <div class="alert alert-success" role="alert">${mensaje}</div>
+                <div class="alert alert-success" role="alert"><c:out value="${mensaje}"/></div>
             </c:if>
             <div class="row">
                 <div class="col-lg-5 parte1 mb-4">
@@ -42,10 +43,11 @@
                         <div class="card-header">Cliente</div>
                         <div class="card-body">
                             <form action="Controlador?menu=NuevaVenta" method="POST">
+                                <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
                                 <div class="form-row">
                                     <div class="form-group col-md-7">
                                         <label>DNI</label>
-                                        <input type="text" name="Codigocliente" value="${c.getDni()}" class="form-control" placeholder="12345678">
+                                        <input type="text" name="Codigocliente" value="${c.getDni()}" class="form-control" placeholder="12345678" maxlength="20" required>
                                     </div>
                                     <div class="form-group col-md-5 d-flex align-items-end">
                                         <button type="submit" name="accion" value="BuscarCliente" class="btn btn-outline-dark btn-block">Buscar</button>
@@ -62,10 +64,11 @@
                         <div class="card-header">Producto</div>
                         <div class="card-body">
                             <form action="Controlador?menu=NuevaVenta" method="POST">
+                                <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
                                 <div class="form-row">
                                     <div class="form-group col-md-7">
                                         <label>Codigo</label>
-                                        <input type="text" name="codigoproducto" value="${producto.getId()}" class="form-control" placeholder="1">
+                                        <input type="number" name="codigoproducto" value="${producto.getId()}" class="form-control" placeholder="1" min="1" required>
                                     </div>
                                     <div class="form-group col-md-5 d-flex align-items-end">
                                         <button type="submit" name="accion" value="BuscarProducto" class="btn btn-outline-dark btn-block">Buscar</button>
@@ -73,6 +76,7 @@
                                 </div>
                             </form>
                             <form action="Controlador?menu=NuevaVenta" method="POST">
+                                <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
                                 <input type="hidden" name="idProducto" value="${producto.getId()}">
                                 <div class="form-group">
                                     <label>Producto</label>
@@ -85,7 +89,7 @@
                                     </div>
                                     <div class="form-group col-md-4">
                                         <label>Cantidad</label>
-                                        <input type="number" value="1" min="1" name="cant" class="form-control">
+                                        <input type="number" value="1" min="1" name="cant" class="form-control" required>
                                     </div>
                                     <div class="form-group col-md-4">
                                         <label>Stock</label>
@@ -101,7 +105,7 @@
                     <div class="card panel-card">
                         <div class="card-header d-flex justify-content-between align-items-center">
                             <span>Detalle de venta</span>
-                            <span class="badge-soft">Total: S/. ${totalpagar}</span>
+                            <span class="badge-soft">Items: ${lista.size()}</span>
                         </div>
                         <div class="table-responsive">
                             <table class="table table-hover mb-0">
@@ -118,21 +122,32 @@
                                 <tbody>
                                     <c:forEach var="list" items="${lista}">
                                         <tr>
-                                            <td>${list.getItem()}</td>
-                                            <td>${list.getIdproducto()}</td>
-                                            <td>${list.getDescripcionP()}</td>
-                                            <td>S/. ${list.getPrecio()}</td>
-                                            <td>${list.getCantidad()}</td>
-                                            <td>S/. ${list.getSubtotal()}</td>
+                                            <td><c:out value="${list.getItem()}"/></td>
+                                            <td><c:out value="${list.getIdproducto()}"/></td>
+                                            <td><c:out value="${list.getDescripcionP()}"/></td>
+                                            <td>S/. <c:out value="${list.getPrecio()}"/></td>
+                                            <td><c:out value="${list.getCantidad()}"/></td>
+                                            <td>S/. <c:out value="${list.getSubtotal()}"/></td>
                                         </tr>
                                     </c:forEach>
+                                    <c:if test="${empty lista}">
+                                        <tr>
+                                            <td colspan="6" class="text-center text-muted py-4">Agrega productos para construir la venta.</td>
+                                        </tr>
+                                    </c:if>
                                 </tbody>
                             </table>
                         </div>
-                        <div class="card-footer d-flex justify-content-between align-items-center">
-                            <div>
-                                <a href="Controlador?menu=NuevaVenta&accion=GenerarVenta" class="btn btn-dark">Generar venta</a>
-                                <a href="Controlador?menu=NuevaVenta&accion=Limpiar" class="btn btn-outline-secondary">Limpiar</a>
+                        <div class="card-footer d-flex justify-content-between align-items-center flex-wrap">
+                            <div class="mb-2 mb-md-0">
+                                <form action="Controlador?menu=NuevaVenta" method="POST" class="d-inline" onsubmit="return confirm('Generar esta venta?');">
+                                    <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
+                                    <button type="submit" name="accion" value="GenerarVenta" class="btn btn-dark">Generar venta</button>
+                                </form>
+                                <form action="Controlador?menu=NuevaVenta" method="POST" class="d-inline">
+                                    <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
+                                    <button type="submit" name="accion" value="Limpiar" class="btn btn-outline-secondary">Limpiar</button>
+                                </form>
                             </div>
                             <input type="text" name="txtTotal" value="S/. ${totalpagar}" class="form-control total-box" readonly>
                         </div>
