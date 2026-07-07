@@ -1,56 +1,79 @@
 # SistemasVentasWeb
 
-Sistema web universitario para gestionar ventas de una tienda de abarrotes.
-El proyecto fue desarrollado como practica academica con Java Web clasico y
-ordenado como repositorio de portafolio para poder ejecutarlo, revisarlo y
-seguir mejorandolo.
+![Java Web CI](https://github.com/JheissonLoor/SistemasVentasWeb/actions/workflows/ci.yml/badge.svg)
+
+Sistema web universitario para gestionar ventas de una tienda de abarrotes. El
+proyecto fue desarrollado como practica academica con Java Web clasico y
+modernizado gradualmente para quedar ejecutable, documentado y presentable como
+repositorio de portafolio.
 
 **Autor:** Jheisson Loor
 
-## De Que Trata
+## Vista General
 
-La aplicacion modela un punto de venta basico para **Abarrotes La 31**. Permite
-iniciar sesion con empleados, gestionar usuarios internos y registrar ventas con
-cliente, productos, detalle de comprobante y descuento de stock.
+La aplicacion modela un punto de venta para **Abarrotes La 31**. Permite iniciar
+sesion con empleados, administrar catalogos, registrar ventas, descontar stock,
+consultar comprobantes y revisar reportes basicos.
 
-## Funcionalidades
+![Panel principal](docs/screenshots/principal.png)
 
-- Login con usuarios registrados en la tabla `empleado`.
-- Passwords almacenados con hash PBKDF2.
-- Roles de acceso:
-  - `Administrador`: gestiona empleados y registra ventas.
-  - `Vendedor`: registra ventas sin acceso a la administracion de empleados.
-- CRUD basico de empleados.
-- Busqueda de cliente por DNI.
-- Busqueda de producto por codigo.
-- Carrito de venta por sesion.
-- Generacion de venta con detalle y actualizacion de stock.
+## Modulos
+
+- Autenticacion con roles `Administrador` y `Vendedor`.
+- Gestion de empleados.
+- Gestion de clientes.
+- Gestion de productos, precios, stock y estado.
+- Registro de ventas con cliente, producto, carrito por sesion y total.
+- Listado de ventas con filtros por fecha.
+- Anulacion de ventas con restauracion de stock.
+- Reporte de productos mas vendidos.
 - Base de datos reproducible con datos demo.
+
+## Capturas
+
+| Login | Nueva venta |
+| --- | --- |
+| ![Login](docs/screenshots/login.png) | ![Nueva venta](docs/screenshots/nueva-venta.png) |
+
+| Clientes | Productos |
+| --- | --- |
+| ![Clientes](docs/screenshots/clientes.png) | ![Productos](docs/screenshots/productos.png) |
 
 ## Stack
 
-- Java Web: Servlets + JSP
+- Java 17
+- Servlets + JSP
 - JDBC
 - MySQL/MariaDB
 - JSTL
 - Bootstrap 4
-- NetBeans / Ant
 - Apache Tomcat 9
+- NetBeans / Ant
+- Maven
+- GitHub Actions
 
-## Base De Datos
+## Ejecucion Local
 
-El esquema reproducible esta en:
-
-```text
-database/schema.sql
-```
-
-En XAMPP, MariaDB normalmente puede quedar en el puerto `3307` si el puerto
-`3306` ya esta ocupado por otro MySQL local.
+1. Levantar MySQL/MariaDB.
+2. Importar la base de datos:
 
 ```bash
 mysql -h 127.0.0.1 -P 3307 -u root < database/schema.sql
 ```
+
+3. Abrir el proyecto en NetBeans o compilar con Maven:
+
+```bash
+mvn package
+```
+
+4. Desplegar en Tomcat 9 y abrir:
+
+```text
+http://127.0.0.1:8081/SistemasVentasWeb/
+```
+
+## Configuracion De Base De Datos
 
 Configuracion por defecto:
 
@@ -72,6 +95,12 @@ Java:
 - `DB_USER`
 - `DB_PASSWORD`
 
+Documentacion ampliada:
+
+- [Base de datos](docs/database.md)
+- [Arquitectura](docs/architecture.md)
+- [Roadmap](docs/roadmap.md)
+
 ## Credenciales Demo
 
 Administrador:
@@ -88,47 +117,32 @@ usuario: empleado
 password: empleado123
 ```
 
-## Datos Demo
+Datos demo:
 
 - Cliente: `12345678`
 - Productos: `1`, `2`, `3`, `4`
 
-## Ejecucion Local
-
-1. Levantar MySQL/MariaDB.
-2. Importar `database/schema.sql`.
-3. Abrir el proyecto en NetBeans o desplegar `web/` en Tomcat 9.
-4. Abrir la aplicacion:
-
-```text
-http://127.0.0.1:8081/SistemasVentasWeb/
-```
-
 ## Mejoras Aplicadas
 
-- Se dejo de usar el DNI como password.
-- Se agrego hashing de passwords con PBKDF2.
-- Se corrigio el login del usuario vendedor demo.
-- Se agrego control de roles en servidor.
-- Se eliminaron consultas SQL concatenadas en DAOs principales.
-- Se reemplazaron errores silenciosos por excepciones con mensaje.
-- Se corrigio el flujo de venta para guardar cabecera, detalle y descontar stock en una transaccion.
-- Se movio el carrito de venta a la sesion para evitar mezcla de datos entre usuarios.
-- Se agrego un esquema SQL reproducible.
-- Se removio dependencia de rutas locales antiguas de NetBeans.
-- Se actualizo la interfaz de login, menu principal, empleados y registro de ventas.
+- Passwords con hash PBKDF2.
+- Control de roles en servidor.
+- Consultas SQL preparadas en DAOs principales.
+- Manejo de errores con mensajes claros.
+- Carrito de venta aislado por sesion.
+- Transaccion para cabecera, detalle y descuento de stock.
+- CRUD de empleados, clientes y productos.
+- Baja logica para registros relacionados con ventas.
+- Anulacion de ventas con restauracion de stock.
+- Filtros y reporte de productos mas vendidos.
+- Proteccion basica de formularios con token de sesion.
+- Acciones destructivas por POST.
+- Interfaz renovada con paneles, metricas y tablas responsivas.
+- Soporte Maven y CI con GitHub Actions.
+- Documentacion con capturas reales.
 
-## Proximas Mejoras Recomendadas
+## Estado Del Proyecto
 
-- Migrar a Maven o Gradle.
-- Agregar CRUD completo de clientes y productos.
-- Agregar listado y anulacion de ventas.
-- Agregar filtros y reportes por fecha.
-- Agregar pruebas automatizadas.
-- Migrar a Spring Boot, Spring Security y JPA como version 2.0.
-
-## Nota
-
-Este es un proyecto universitario antiguo modernizado gradualmente. La intencion
-actual es conservar su valor academico, dejarlo ejecutable y prepararlo para
-futuras mejoras sin perder de vista su origen.
+Este repositorio conserva su valor como proyecto universitario, pero ahora tiene
+una base mas ordenada para seguir evolucionando. La siguiente mejora grande
+recomendada es una version 2.0 con Spring Boot, Spring Security, JPA y pruebas
+automatizadas mas completas.
